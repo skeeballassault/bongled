@@ -2,6 +2,8 @@
 jQuery(function($){    
     'use strict';
 
+    var Config = {}
+
     /**
      * All the code relevant to Socket.IO is collected in the IO namespace.
      *
@@ -282,7 +284,7 @@ jQuery(function($){
                 App.Host.numPlayersInRoom += 1;
 
                 // If two players have joined, start the game!
-                if (App.Host.numPlayersInRoom === 2) {
+                if (App.Host.numPlayersInRoom === Config.nbPlayers) {
                     // console.log('Room is full. Almost ready!');
 
                     // Let the server know that two players are present.
@@ -622,7 +624,10 @@ jQuery(function($){
 
     };
 
-    IO.init();
-    App.init();
+    fetch('/config.json').then(data => data.json()).then(json => {
+        Config = json;
+        IO.init();
+        App.init();
+    });
 
 }($));
