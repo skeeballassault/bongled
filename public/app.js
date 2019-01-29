@@ -613,16 +613,20 @@ jQuery(function($){
             textFit(
                 $(el)[0],
                 {
-                    alignHoriz:true,
-                    alignVert:false,
-                    widthOnly:true,
-                    reProcess:true,
-                    maxFontSize:300
+                    alignHoriz: true,
+                    widthOnly: true,
+                    minFontSize: 50,
+                    maxFontSize: 100,
+                    multiLine: true
                 }
             );
         }
 
     };
+
+    $(window).resize(function () {
+        App.doTextFit('#hostWord');
+    });
 
     fetch('/config.json').then(data => data.json()).then(json => {
         Config = json;
