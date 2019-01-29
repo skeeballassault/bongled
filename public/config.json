@@ -1,4 +1,6 @@
 {
-    "nbPlayers": 2,
-    "countdownDuration": 2
+    "nbPlayers": 1,
+    "countdownDuration": 2,
+    "goodAnswer": 5,
+    "badAnswer": -3
 }

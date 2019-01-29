@@ -1,3 +1,4 @@
+
 ;
 jQuery(function($){    
     'use strict';
@@ -317,6 +318,7 @@ jQuery(function($){
                         .find('.playerName')
                         .html(player.playerName);
                     player.$playerScore = $playerInfo.find('.playerScore');
+                    player.playerScore = 0;
                 });
             },
 
@@ -347,10 +349,13 @@ jQuery(function($){
                     // Get the player's score
                     var $pScore = App.Host.players[data.playerId].$playerScore;
 
+                    var isGoodAnswer = App.Host.currentCorrectAnswer === data.answer;
+
+                    App.Host.players[data.playerId].playerScore += isGoodAnswer ? Config.goodAnswer : Config.badAnswer;
+                    $pScore.text( App.Host.players[data.playerId].playerScore );
+
                     // Advance player's score if it is correct
-                    if( App.Host.currentCorrectAnswer === data.answer ) {
-                        // Add 5 to the player's score
-                        $pScore.text( +$pScore.text() + 5 );
+                    if( isGoodAnswer ) {
 
                         // Advance the round
                         App.currentRound += 1;
@@ -364,9 +369,6 @@ jQuery(function($){
                         // Notify the server to start the next round.
                         IO.socket.emit('hostNextRound',data);
 
-                    } else {
-                        // A wrong answer was submitted, so decrement the player's score.
-                        $pScore.text( +$pScore.text() - 3 );
                     }
                 }
             },
