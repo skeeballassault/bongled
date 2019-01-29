@@ -54,7 +54,7 @@ jQuery(function($){
 
         /**
          * A player has successfully joined the game.
-         * @param data {{playerName: string, gameId: int, mySocketId: int}}
+         * @param data {{playerName: string, gameId: int, playerId: int}}
          */
         playerJoinedRoom : function(data) {
             // When a player joins a room, do the updateWaitingScreen funciton.
@@ -169,6 +169,7 @@ jQuery(function($){
             App.$templateNewGame = $('#create-game-template').html();
             App.$templateJoinGame = $('#join-game-template').html();
             App.$hostGame = $('#host-game-template').html();
+            App.$playerInfo = $('#player-info-template').html();
         },
 
         /**
@@ -207,7 +208,7 @@ jQuery(function($){
             /**
              * Contains references to player data
              */
-            players : [],
+            players : {},
 
             /**
              * Flag to indicate if a new game is starting.
@@ -265,7 +266,7 @@ jQuery(function($){
 
             /**
              * Update the Host screen when the first player joins
-             * @param data{{playerName: string}}
+             * @param data{{playerName: string, gameId: int, playerId: string}}
              */
             updateWaitingScreen: function(data) {
                 // If this is a restarted game, show the screen.
@@ -278,7 +279,7 @@ jQuery(function($){
                     .text('Player ' + data.playerName + ' joined the game.');
 
                 // Store the new player's data on the Host.
-                App.Host.players.push(data);
+                App.Host.players[data.playerId] = data;
 
                 // Increment the number of players in the room
                 App.Host.numPlayersInRoom += 1;
@@ -303,22 +304,20 @@ jQuery(function($){
 
                 // Begin the on-screen countdown timer
                 var $secondsLeft = $('#hostWord');
-                App.countDown( $secondsLeft, 5, function(){
+                App.countDown( $secondsLeft, Config.countdownDuration, function(){
                     IO.socket.emit('hostCountdownFinished', App.gameId);
                 });
 
-                // Display the players' names on screen
-                $('#player1Score')
-                    .find('.playerName')
-                    .html(App.Host.players[0].playerName);
+                Object.keys(App.Host.players).forEach(function(key){
+                    const player = App.Host.players[key];
 
-                $('#player2Score')
-                    .find('.playerName')
-                    .html(App.Host.players[1].playerName);
+                    const $playerInfo = $(App.$playerInfo).appendTo('#playerInfos');
 
-                // Set the Score section on screen to 0 for each player.
-                $('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);
-                $('#player2Score').find('.score').attr('id',App.Host.players[1].mySocketId);
+                    $playerInfo
+                        .find('.playerName')
+                        .html(player.playerName);
+                    player.$playerScore = $playerInfo.find('.playerScore');
+                });
             },
 
             /**
@@ -346,7 +345,7 @@ jQuery(function($){
                 if (data.round === App.currentRound){
 
                     // Get the player's score
-                    var $pScore = $('#' + data.playerId);
+                    var $pScore = App.Host.players[data.playerId].$playerScore;
 
                     // Advance player's score if it is correct
                     if( App.Host.currentCorrectAnswer === data.answer ) {
@@ -403,6 +402,7 @@ jQuery(function($){
                 // Reset game data
                 App.Host.numPlayersInRoom = 0;
                 App.Host.isNewGame = true;
+                App.Host.players = {};
             },
 
             /**
@@ -496,11 +496,11 @@ jQuery(function($){
             },
 
             /**
-             * Display the waiting screen for player 1
+             * Display the waiting screen when waiting for other players
              * @param data
              */
             updateWaitingScreen : function(data) {
-                if(IO.socket.socket.sessionid === data.mySocketId){
+                if(IO.socket.socket.sessionid === data.playerId){
                     App.myRole = 'Player';
                     App.gameId = data.gameId;
 

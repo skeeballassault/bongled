@@ -75,16 +75,15 @@
 
     <!-- This is the 'Host' screen. It displays the word for each player to match -->
     <script id="host-game-template" type="text/template">
-        <div id="playerScores">
-            <div id="player1Score" class="playerScore">
-                <div class="score">0</div><div class="playerName">Player 1</div>
-            </div>
-            <div id="player2Score" class="playerScore">
-                <div class="score">0</div><div class="playerName">Player 2</div>
-            </div>
-        </div>
+        <div id="playerInfos"></div>
         <div id="wordArea">
             <div id="hostWord">5</div>
+        </div>
+    </script>
+
+    <script id="player-info-template" type="text/template">
+        <div class="playerInfo">
+            <div class="playerScore">0</div><div class="playerName">Player</div>
         </div>
     </script>
 

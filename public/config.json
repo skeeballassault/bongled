@@ -1,3 +1,4 @@
 {
-    "nbPlayers": 2
+    "nbPlayers": 2,
+    "countdownDuration": 2
 }

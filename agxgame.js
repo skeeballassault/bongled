@@ -104,7 +104,7 @@ function playerJoinGame(data) {
     // If the room exists...
     if( room != undefined ){
         // attach the socket id to the data object.
-        data.mySocketId = sock.id;
+        data.playerId = sock.id;
 
         // Join the room
         sock.join(data.gameId);

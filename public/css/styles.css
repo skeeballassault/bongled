@@ -253,13 +253,13 @@ html, body {
     text-transform: uppercase;
 }
 
-#playerScores {
+#playerInfos {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
 }
 
-.playerScore {
+.playerInfo {
     padding: 0;
     margin: 0;
     font-family: 'Quicksand', sans-serif;
@@ -267,30 +267,30 @@ html, body {
     display: flex;
 }
 
-.playerScore:nth-child(odd) {
+.playerInfo:nth-child(odd) {
     text-align: left;
     flex-direction: row;
 }
 
-.playerScore:nth-child(even) {
+.playerInfo:nth-child(even) {
     text-align: right;
     flex-direction: row-reverse;
 }
 
-.playerScore div {
+.playerInfo div {
     font-size: 1.4EM;
     padding: 10px;
     margin: 0;
 }
 
-.playerScore .score {
+.playerInfo .playerScore {
     text-align: center;
     background-color: #A8FF56;
     max-width: 40px;
     width: 10%;
 }
 
-.playerScore .playerName {
+.playerInfo .playerName {
     background-color: #ECFFE0;
     overflow: hidden;
     flex-grow: 1;
