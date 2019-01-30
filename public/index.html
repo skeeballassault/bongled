@@ -25,7 +25,7 @@
         <div class="titleWrapper">
 
             <div class="title">
-                ANAGRAMMATIX
+                FIBBAGE
             </div>
 
             <div class="buttons">
@@ -73,18 +73,47 @@
         </div>
     </script>
 
+    <!-- This scrreen appears for players to enter ploys -->
+    <script id="ploy-template" type="text/template">
+        <div class="joinGameWrapper">
+            <div class="info">
+                <label for="inputPloy">Your ploy:</label>
+                <input id="inputPloy" type="text" />
+            </div>
+
+            <div class="info buttons">
+                <button id="btnSendPloy" class="btn">Validate</button>
+                <div id="playerWaitingMessage"></div>
+            </div>
+        </div>
+    </script>
+
     <!-- This is the 'Host' screen. It displays the word for each player to match -->
     <script id="host-game-template" type="text/template">
         <div id="playerInfos"></div>
         <div id="wordArea">
             <div id="hostWord">5</div>
         </div>
+        <div id="ploysArea"></div>
     </script>
 
     <script id="player-info-template" type="text/template">
         <div class="playerInfo">
             <div class="playerScore">0</div><div class="playerName">Player</div>
         </div>
+    </script>
+
+    <!-- Wait screen -->
+    <script id="wait-screen-template" type="text/template">
+
+        <div class="titleWrapper">
+
+            <div class="title">
+                Please wait
+            </div>
+
+        </div>
+
     </script>
 
     <!-- JavaScript Libraries -->
