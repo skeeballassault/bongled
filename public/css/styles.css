@@ -7,6 +7,10 @@ Dark Purple : #A22FB0
 
 */
 
+:root {
+    --answer-button-margin: 10px;
+}
+
 html, body {
     background-color: #78BD4C;
     height: 100%;
@@ -22,10 +26,13 @@ html, body {
      (Inspired by Bootstrap 3.0)
    ****************************** */
 
+.btnHome {
+    width: 49%;
+}
+
 .btn {
     display: inline-block;
     height: 100%;
-    width: 49%;
     margin-bottom: 0;
     color: #ECFFE0;
     font-family: 'Quicksand', sans-serif;
@@ -207,22 +214,29 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    margin: var(--answer-button-margin);
 }
 
 #ulAnswers li {
-    width: 100%;
-    height: 16.6%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .btnAnswer {
-    width: 100%;
-    border-bottom: 1px dotted white;
     font-weight: 400;
     font-size: 3em;
     color: #AE37B2;
+    flex-grow: 1;
+    padding: 0;
+    border: 0;
 }
 
-
+li:not(:last-child) .btnAnswer {
+    margin-bottom: var(--answer-button-margin);
+}
 
 /* ******************************
             HOST SCREEN
