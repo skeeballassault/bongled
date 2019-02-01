@@ -265,13 +265,11 @@ function shuffle(array) {
  */
 var wordPool = [
     {
-        "question"  : "Ça c'est la question",
-        "answer" : "la réponse",
-        "decoys" : ["Mauvaise réponse","Non pas celle-ci","Celle-là non plus"]
+        "question"  : "What was the nickname of the king Jean II ? Jean the ...",
+        "answer" : "Bon",
     },
     {
-        "question"  : "Une super question",
-        "answer" : "La super réponse",
-        "decoys" : ["Raté","Oups"]
+        "question"  : "A cool question",
+        "answer" : "The cool answer",
     },
 ];

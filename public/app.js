@@ -376,39 +376,6 @@ jQuery(function($){
              * @param data{{round: *, playerId: *, answer: *, gameId: *}}
              */
             checkAnswer : function(data) {
-                /*
-                // Verify that the answer clicked is from the current round.
-                // This prevents a 'late entry' from a player whos screen has not
-                // yet updated to the current round.
-                if (data.round === App.currentRound){
-
-                    // Get the player's score
-                    var $pScore = App.Host.players[data.playerId].$playerScore;
-
-                    var isGoodAnswer = App.Host.currentCorrectAnswer === data.answer;
-
-                    App.Host.players[data.playerId].playerScore += isGoodAnswer ? Config.goodAnswer : Config.badAnswer;
-                    $pScore.text( App.Host.players[data.playerId].playerScore );
-
-                    // Advance player's score if it is correct
-                    if( isGoodAnswer ) {
-
-                        // Advance the round
-                        App.currentRound += 1;
-
-                        // Prepare data to send to the server
-                        var data = {
-                            gameId : App.gameId,
-                            round : App.currentRound
-                        }
-
-                        // Notify the server to start the next round.
-                        IO.socket.emit('hostNextRound',data);
-
-                    }
-                }
-                */
-
                 // Verify that the answer clicked is from the current round.
                 // This prevents a 'late entry' from a player whos screen has not
                 // yet updated to the current round.
@@ -520,25 +487,25 @@ jQuery(function($){
              * @param data{{round: *, gameId: *, question: *, answer: *, ploys: Array, list: Array}}
              */
             ploysList : function(data) {
-                // Create an unordered list element
-                var $list = $('<ul/>').attr('id','ulAnswers');
-
-                // Insert a list item for each word in the word list
-                // received from the server.
                 $.each(data.list, function(){
-                    $list                                //  <ul> </ul>
-                        .append( $('<li/>')              //  <ul> <li> </li> </ul>
-                            .append( $('<button/>')      //  <ul> <li> <button> </button> </li> </ul>
-                                .addClass('btnAnswer')   //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                                .addClass('btn')         //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                                .val(this.value)               //  <ul> <li> <button class='btnAnswer' value='word'> </button> </li> </ul>
-                                .html(this.value)              //  <ul> <li> <button class='btnAnswer' value='word'>word</button> </li> </ul>
-                            )
-                        )
+                    var $answer = $('<div>')
+                        .addClass('answer')
+                        .html(this.value);
+                    $('#ploysArea').append($answer);
                 });
-
-                // Insert the list onto the screen.
-                $('#ploysArea').html($list);
+                
+                var nbColumns;
+                if(App.Host.nbPloys <= 1)
+                    nbColumns = 1;
+                else if(App.Host.nbPloys <= 4)
+                    nbColumns = 2;
+                else if(App.Host.nbPloys <= 9)
+                    nbColumns = 3;
+                else
+                    nbColumns = 4;
+                $('#ploysArea').css('grid-template-columns', "1fr ".repeat(nbColumns));
+                
+                App.doTextFit('#hostWord');
             },
 
             /**
@@ -659,22 +626,6 @@ jQuery(function($){
              *  Click handler for the Player hitting a word in the word list.
              */
             onPlayerAnswerClick: function(event) {
-                /*
-                // console.log('Clicked Answer Button');
-                var $btn = $(this);      // the tapped button
-                var answer = $btn.val(); // The tapped word
-
-                // Send the player info and tapped word to the server so
-                // the host can check the answer.
-                var data = {
-                    gameId: App.gameId,
-                    playerId: App.mySocketId,
-                    answer: answer,
-                    round: App.currentRound
-                }
-                IO.socket.emit('playerAnswer',data);
-                */
-
                 console.log("onPlayerAnswerClick", event.data);
 
                 var data = {
@@ -734,27 +685,6 @@ jQuery(function($){
              */
             newQuestion : function(data) {
                 $('#gameArea').html(App.$ployTemplate);
-                /*
-                // Create an unordered list element
-                var $list = $('<ul/>').attr('id','ulAnswers');
-
-                // Insert a list item for each word in the word list
-                // received from the server.
-                $.each(data.list, function(){
-                    $list                                //  <ul> </ul>
-                        .append( $('<li/>')              //  <ul> <li> </li> </ul>
-                            .append( $('<button/>')      //  <ul> <li> <button> </button> </li> </ul>
-                                .addClass('btnAnswer')   //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                                .addClass('btn')         //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                                .val(this)               //  <ul> <li> <button class='btnAnswer' value='word'> </button> </li> </ul>
-                                .html(this)              //  <ul> <li> <button class='btnAnswer' value='word'>word</button> </li> </ul>
-                            )
-                        )
-                });
-
-                // Insert the list onto the screen.
-                $('#gameArea').html($list);
-                */
             },
 
             /**
@@ -769,27 +699,16 @@ jQuery(function($){
                 // Insert a list item for each word in the word list
                 // received from the server.
                 $.each(data.list, function(){
-                    /*
-                    $list                                //  <ul> </ul>
-                        .append( $('<li/>')              //  <ul> <li> </li> </ul>
-                            .append( $('<button/>')      //  <ul> <li> <button> </button> </li> </ul>
-                                .addClass('btnAnswer')   //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                                .addClass('btn')         //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                                .val(this.value)               //  <ul> <li> <button class='btnAnswer' value='word'> </button> </li> </ul>
-                                .html(this.value)              //  <ul> <li> <button class='btnAnswer' value='word'>word</button> </li> </ul>
-                            )
-                        )
-                    */
                     
-                    var $button = $('<button/>')             //  <ul> <li> <button> </button> </li> </ul>
-                        .addClass('btnAnswer') //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                        .addClass('btn')       //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
-                        .val(this.value)       //  <ul> <li> <button class='btnAnswer' value='word'> </button> </li> </ul>
-                        .html(this.value)      //  <ul> <li> <button class='btnAnswer' value='word'>word</button> </li> </ul>
+                    var $button = $('<button/>')
+                        .addClass('btnAnswer')
+                        .addClass('btn')
+                        .val(this.value)
+                        .html(this.value)
                     console.log("temp", App.mySocketId, this.playerId, App.mySocketId == this.playerId)
                     if(App.mySocketId == this.playerId)
                         $button.attr('disabled', 'disabled');
-                    var $li = $('<li/>');      //  <ul> <li> </li> </ul>
+                    var $li = $('<li/>');
                     $li.append($button);
                     $list.append($li);
 

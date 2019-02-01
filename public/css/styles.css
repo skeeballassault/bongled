@@ -313,6 +313,21 @@ li:not(:last-child) .btnAnswer {
     flex-grow: 1;
 }
 
+#ploysArea {
+    padding: 10px;
+    display: grid;
+    grid-gap: 10px;
+}
+
+.answer {
+    font-family: 'Quicksand', sans-serif;
+    background-color: #8AD453;
+    padding: 10px;
+    color: #AE37B2;
+    font-weight: 400;
+    font-size: 2em;
+    text-align: center;
+}
 
 /* ******************************
           TITLE SCREEN
