@@ -196,6 +196,7 @@ jQuery(function($){
             App.$waitScreenTemplate = $('#wait-screen-template').html();
             App.$playerAnswerTemplate = $('#player-answer-template').html();
             App.$playerVoteTemplate = $('#player-vote-template').html();
+            App.$restartScreenTemplate = $('#restart-screen-template').html();
         },
 
         /**
@@ -211,6 +212,7 @@ jQuery(function($){
             App.$doc.on('click', '#btnSendPloy',App.Player.onPlayerSendPloyClick);
             // App.$doc.on('click', '.btnAnswer',App.Player.onPlayerAnswerClick);
             App.$doc.on('click', '#btnPlayerRestart', App.Player.onPlayerRestart);
+            App.$doc.on('click', '#btnPlayerLaunchGame', App.Player.onPlayerLaunchGameClick);
         },
 
         /* *************************************
@@ -315,14 +317,6 @@ jQuery(function($){
 
                 // Increment the number of players in the room
                 App.Host.numPlayersInRoom += 1;
-
-                // If two players have joined, start the game!
-                if (App.Host.numPlayersInRoom === Config.nbPlayers) {
-                    // console.log('Room is full. Almost ready!');
-
-                    // Let the server know that two players are present.
-                    IO.socket.emit('hostRoomFull',App.gameId);
-                }
             },
 
             /**
@@ -389,7 +383,7 @@ jQuery(function($){
                     console.log("App.Host.answers", App.Host.answers);
 
                     // If all players answered
-                    if (App.Host.nbAnswers === Config.nbPlayers) {
+                    if (App.Host.nbAnswers === Object.keys(App.Host.players).length) {
                         console.log('All players answered.');
 
                         App.Host.displayAnswers();
@@ -481,8 +475,10 @@ jQuery(function($){
                     // Increment the number of players in the room
                     App.Host.nbPloys += 1;
 
+                    console.log("wesh", "App.Host.nbPloys = " + App.Host.nbPloys + " / Object.keys(App.Host.players).length = " + Object.keys(App.Host.players).length);
+
                     // If two players have joined, start the game!
-                    if (App.Host.nbPloys === Config.nbPlayers) {
+                    if (App.Host.nbPloys === Object.keys(App.Host.players).length) {
                         console.log('Ploys all sent.');
                         
                         var newData = {
@@ -646,6 +642,10 @@ jQuery(function($){
                 App.Player.myName = data.playerName;
             },
 
+            onPlayerLaunchGameClick: function() {
+                IO.socket.emit('hostRoomFull', App.gameId);
+            },
+
             /**
              * The player entered his ploy
              * and clicked validate.
@@ -695,9 +695,14 @@ jQuery(function($){
                     gameId : App.gameId,
                     playerName : App.Player.myName
                 }
+
+                console.log(App.$restartScreenTemplate);
+
                 IO.socket.emit('playerRestart',data);
                 App.currentRound = 0;
-                $('#gameArea').html("<h3>Waiting on host to start new game.</h3>");
+                
+                // $('#gameArea').html("<h3>Waiting on host to start new game.</h3>");
+                $('#gameArea').html(App.$restartScreenTemplate);
             },
 
             /**
@@ -708,6 +713,9 @@ jQuery(function($){
                 if(IO.socket.socket.sessionid === data.playerId){
                     App.myRole = 'Player';
                     App.gameId = data.gameId;
+
+                    $('#btnPlayerLaunchGame').css('display', 'inline-block');
+                    $('#btnStart').css('display', 'none');
 
                     $('#playerWaitingMessage')
                         .append('<p/>')
