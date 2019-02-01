@@ -556,25 +556,28 @@ jQuery(function($){
              * @param data
              */
             endGame : function(data) {
-                // Get the data for player 1 from the host screen
-                var $p1 = $('#player1Score');
-                var p1Score = +$p1.find('.score').text();
-                var p1Name = $p1.find('.playerName').text();
-
-                // Get the data for player 2 from the host screen
-                var $p2 = $('#player2Score');
-                var p2Score = +$p2.find('.score').text();
-                var p2Name = $p2.find('.playerName').text();
-
-                // Find the winner based on the scores
-                var winner = (p1Score < p2Score) ? p2Name : p1Name;
-                var tie = (p1Score === p2Score);
+                var bestScore = 0;
+                Object.keys(App.Host.players).forEach(function(playerId){
+                    if(App.Host.players[playerId].playerScore > bestScore)
+                        bestScore = App.Host.players[playerId].playerScore;
+                });
+                var winners = [];
+                Object.keys(App.Host.players).forEach(function(playerId){
+                    if(App.Host.players[playerId].playerScore == bestScore)
+                        winners.push(App.Host.players[playerId].playerName);
+                });
 
                 // Display the winner (or tie game message)
-                if(tie){
-                    $('#hostWord').text("It's a Tie!");
+                if(winners.length > 1){
+                    var winnersStr = "";
+                    winners.forEach(function(winner, index){
+                        if(index == winners.length - 1)
+                            winnersStr += "And "
+                        winnersStr += winner + " ";
+                    });
+                    $('#hostWord').text(winnersStr + "Win !");
                 } else {
-                    $('#hostWord').text( winner + ' Wins!!' );
+                    $('#hostWord').text( winners[0] + ' Wins !' );
                 }
                 App.doTextFit('#hostWord');
 
