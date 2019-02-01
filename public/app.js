@@ -194,6 +194,8 @@ jQuery(function($){
             App.$playerInfo = $('#player-info-template').html();
             App.$ployTemplate = $('#ploy-template').html();
             App.$waitScreenTemplate = $('#wait-screen-template').html();
+            App.$playerAnswerTemplate = $('#player-answer-template').html();
+            App.$playerVoteTemplate = $('#player-vote-template').html();
         },
 
         /**
@@ -334,7 +336,7 @@ jQuery(function($){
 
                 // Begin the on-screen countdown timer
                 var $secondsLeft = $('#hostWord');
-                App.countDown( $secondsLeft, Config.countdownDuration, function(){
+                App.countDown( $secondsLeft, Config.pregameCountdownDuration, function(){
                     IO.socket.emit('hostCountdownFinished', App.gameId);
                 });
 
@@ -360,7 +362,7 @@ jQuery(function($){
                 $('#hostWord').text(data.question);
                 App.doTextFit('#hostWord');
 
-                $('#ploysArea').empty();
+                $('#playersAnswersArea').empty();
 
                 // Update the data for the current round
                 App.Host.currentQuestion = data.question;
@@ -405,13 +407,37 @@ jQuery(function($){
                         // Notify the server to start the next round.
                         setTimeout(function(){
                             IO.socket.emit('hostNextRound', data);
-                        }, Config.countdownDuration * 1000);
+                        }, Config.answerDisplayCountdownDuration * 1000);
                     }
                 }
             },
 
             displayAnswers : function() {
+                Object.keys(App.Host.answers).forEach(function(playerAnsweringId){
+                    var answer = App.Host.answers[playerAnsweringId];
+                    
+                    var $curPlayerVote = $(App.$playerVoteTemplate);
+                    // console.log(playerAnsweringId);
+                    $curPlayerVote.find(".playerName").html(App.Host.players[playerAnsweringId].playerName);
+                    // console.log($curPlayerVote);
+                    // console.log($curPlayerVote.find('.playerVote'));
 
+                    if(answer.playerId == "answer"){
+                        $curPlayerVote.find(".bonus").html("+" + Config.goodAnswer);
+                        $curPlayerVote.find(".malus").remove();
+                    } else {
+                        $curPlayerVote.find(".bonus").remove();
+                        $curPlayerVote.find(".malus").html("+" + Config.ployAnswer);
+                    }
+
+                    var $curPlayerAnswer;
+                    if(App.Host.players[answer.playerId])
+                        $curPlayerAnswer = App.Host.players[answer.playerId].$playerAnswer;
+                    else
+                        $curPlayerAnswer = App.Host.$trueAnswer;
+                    var $playersVotesArea = $curPlayerAnswer.find('.playersVotesArea');
+                    $playersVotesArea.append($curPlayerVote);
+                });
             },
 
             updateScore : function() {
@@ -487,11 +513,28 @@ jQuery(function($){
              * @param data{{round: *, gameId: *, question: *, answer: *, ploys: Array, list: Array}}
              */
             ploysList : function(data) {
+                console.log(data.list);
+
                 $.each(data.list, function(){
+                    /*
                     var $answer = $('<div>')
                         .addClass('answer')
                         .html(this.value);
-                    $('#ploysArea').append($answer);
+                    
+                    $('#playersAnswersArea').append($answer);
+                    */
+                    var $curPlayerAnswer = $(App.$playerAnswerTemplate);
+                    $curPlayerAnswer.find('.answer').html(this.value);
+                    $('#playersAnswersArea').append($curPlayerAnswer);
+
+                    console.log(App.Host.players);
+                    console.log(this.playerId);
+                    console.log(this);
+
+                    if(!App.Host.players[this.playerId])
+                        App.Host.$trueAnswer = $curPlayerAnswer;
+                    else
+                        App.Host.players[this.playerId].$playerAnswer = $curPlayerAnswer;
                 });
                 
                 var nbColumns;
@@ -503,7 +546,7 @@ jQuery(function($){
                     nbColumns = 3;
                 else
                     nbColumns = 4;
-                $('#ploysArea').css('grid-template-columns', "1fr ".repeat(nbColumns));
+                $('#playersAnswersArea').css('grid-template-columns', "1fr ".repeat(nbColumns));
                 
                 App.doTextFit('#hostWord');
             },
@@ -535,7 +578,7 @@ jQuery(function($){
                 }
                 App.doTextFit('#hostWord');
 
-                $('#ploysArea').empty();
+                $('#playersAnswersArea').empty();
 
                 // Reset game data
                 App.Host.numPlayersInRoom = 0;

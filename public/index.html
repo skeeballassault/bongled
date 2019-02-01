@@ -94,7 +94,22 @@
         <div id="wordArea">
             <div id="hostWord">5</div>
         </div>
-        <div id="ploysArea"></div>
+        <div id="playersAnswersArea"></div>
+    </script>
+
+    <script id="player-answer-template" type="text/template">
+        <div class="playerAnswer">
+            <div class="answer"></div>
+            <div class="playersVotesArea"></div>
+        </div>
+    </script>
+
+    <script id="player-vote-template" type="text/template">
+        <div class="playerVote">
+            <div class="malus"></div>
+            <div class="playerName"></div>
+            <div class="bonus"></div>
+        </div>
     </script>
 
     <script id="player-info-template" type="text/template">
@@ -105,15 +120,11 @@
 
     <!-- Wait screen -->
     <script id="wait-screen-template" type="text/template">
-
         <div class="titleWrapper">
-
             <div class="title">
                 Please wait
             </div>
-
         </div>
-
     </script>
 
     <!-- JavaScript Libraries -->

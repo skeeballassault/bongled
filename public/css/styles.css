@@ -313,20 +313,54 @@ li:not(:last-child) .btnAnswer {
     flex-grow: 1;
 }
 
-#ploysArea {
+#playersAnswersArea {
     padding: 10px;
     display: grid;
     grid-gap: 10px;
+    font-family: 'Quicksand', sans-serif;
+    padding: 10px;
+    text-align: center;
+    font-weight: 400;
 }
 
-.answer {
-    font-family: 'Quicksand', sans-serif;
+#playersAnswersArea .playerAnswer {
     background-color: #8AD453;
-    padding: 10px;
+}
+
+#playersAnswersArea .playerAnswer .answer {
     color: #AE37B2;
-    font-weight: 400;
     font-size: 2em;
-    text-align: center;
+}
+
+#playersAnswersArea .playerAnswer .playersVotesArea {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 4px;
+}
+
+#playersAnswersArea .playerAnswer .playersVotesArea .playerVote {
+    font-size: 1em;
+    padding-bottom: 4px;
+    display: flex;
+}
+
+#playersAnswersArea .playerAnswer .playersVotesArea .playerVote div {
+    padding: 4px;
+}
+
+#playersAnswersArea .playerAnswer .playersVotesArea .playerVote .playerName {
+    color: #000;
+    background-color: #93e853;
+}
+
+#playersAnswersArea .playerAnswer .playersVotesArea .playerVote .malus {
+    color: #550000;
+    background-color: rgb(228, 15, 15);
+}
+
+#playersAnswersArea .playerAnswer .playersVotesArea .playerVote .bonus {
+    color: #000055;
+    background-color: rgb(29, 106, 248);
 }
 
 /* ******************************
