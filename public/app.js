@@ -520,7 +520,7 @@ jQuery(function($){
                     $('#playersAnswersArea').append($answer);
                     */
                     var $curPlayerAnswer = $(App.$playerAnswerTemplate);
-                    $curPlayerAnswer.find('.answer').html(this.value);
+                    $curPlayerAnswer.find('.answer').html(this.value.toUpperCase());
                     $('#playersAnswersArea').append($curPlayerAnswer);
 
                     console.log(App.Host.players);
@@ -534,9 +534,7 @@ jQuery(function($){
                 });
                 
                 var nbColumns;
-                if(App.Host.nbPloys <= 1)
-                    nbColumns = 1;
-                else if(App.Host.nbPloys <= 4)
+                if(App.Host.nbPloys <= 4)
                     nbColumns = 2;
                 else if(App.Host.nbPloys <= 9)
                     nbColumns = 3;
@@ -758,7 +756,7 @@ jQuery(function($){
                         .addClass('btnAnswer')
                         .addClass('btn')
                         .val(this.value)
-                        .html(this.value)
+                        .html(this.value.toUpperCase())
                     console.log("temp", App.mySocketId, this.playerId, App.mySocketId == this.playerId)
                     if(App.mySocketId == this.playerId)
                         $button.attr('disabled', 'disabled');

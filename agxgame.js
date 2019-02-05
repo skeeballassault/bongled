@@ -1,6 +1,8 @@
 var io;
 var gameSocket;
 
+var Config = require('./public/config.json')
+
 /**
  * This function is called by index.js to initialize a new game instance.
  *
@@ -74,7 +76,7 @@ function hostStartGame(gameId) {
  * @param data Sent from the client. Contains the current round and gameId (room)
  */
 function hostNextRound(data) {
-    if(data.round < wordPool.length ){
+    if(data.round < wordPool[Config.language].length ){
         // Send a new set of words back to the host and players.
         sendQuestion(data.round, data.gameId);
     } else {
@@ -221,8 +223,8 @@ function getWordData(i){
     // Package the words into a single object.
     var wordData = {
         round: i,
-        question : wordPool[i].question,   // Displayed Word
-        answer : wordPool[i].answer, // Correct Answer
+        question : wordPool[Config.language][i].question,   // Displayed Word
+        answer : wordPool[Config.language][i].answer, // Correct Answer
         //list : decoys      // Word list for player (decoys and answer)
     };
 
@@ -263,13 +265,41 @@ function shuffle(array) {
  *
  * @type {Array}
  */
-var wordPool = [
-    {
-        "question"  : "What was the nickname of the king Jean II ? Jean the ...",
-        "answer" : "Bon",
-    },
-    {
-        "question"  : "A cool question",
-        "answer" : "The cool answer",
-    },
-];
+var wordPool = {
+    en: [
+        {
+            "question"  : "William Shatner raised $25.000 for Habitat for Humanity by selling his ...",
+            "answer" : "kidney stone",
+        },
+        {
+            "question"  : "Anatidaephobia is the fear that somewhere in the world a ... is watching you.",
+            "answer" : "duck",
+        },
+        {
+            "question"  : "The island of Man flag depicts three ... interlinked together.",
+            "answer" : "legs",
+        },
+        {
+            "question"  : "Jacobites Cruises purchased unusual insurance to protect it from damage caused by ...",
+            "answer" : "The Loch Ness monster",
+        },
+    ],
+    fr: [
+        {
+            "question"  : "Dans le cadre d'une vente caritative, William Shatner a vendu un(e) ... pour 25 000 $ au profit de l'ONG Habitat for Humanity.",
+            "answer" : "calcul rénal",
+        },
+        {
+            "question"  : "L’anatidaephobie est la peur que quelque part il y ait un(e) ... qui vous observe.",
+            "answer" : "canard",
+        },
+        {
+            "question"  : "Le drapeau de l'île de Man représente trois ... entrecroisé(e)s.",
+            "answer" : "jambes",
+        },
+        {
+            "question"  : "La société de croisières Jacobite cruises LTD a assuré ses bateaux contre les dommages produits par le/la ...",
+            "answer" : "Loch Ness",
+        },
+    ]
+};

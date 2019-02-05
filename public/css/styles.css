@@ -339,7 +339,7 @@ li:not(:last-child) .btnAnswer {
 }
 
 #playersAnswersArea .playerAnswer .playersVotesArea .playerVote {
-    font-size: 1em;
+    font-size: 1.5em;
     padding-bottom: 4px;
     display: flex;
 }

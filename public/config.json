@@ -1,8 +1,9 @@
 {
     "nbPlayers": 2,
-    "pregameCountdownDuration": 1,
-    "answerDisplayCountdownDuration": 1,
+    "pregameCountdownDuration": 5,
+    "answerDisplayCountdownDuration": 10,
     "goodAnswer": 10,
     "ployAnswer": 5,
-    "badAnswer": -3
+    "badAnswer": -3,
+    "language": "en"
 }
