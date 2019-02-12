@@ -1,7 +1,10 @@
 var io;
 var gameSocket;
 
-var Config = require('./public/config.json')
+const request = require("request");
+var Config = require('./public/config.json');
+
+var questions = [];
 
 /**
  * This function is called by index.js to initialize a new game instance.
@@ -58,8 +61,18 @@ function hostPrepareGame(gameId) {
         mySocketId : sock.id,
         gameId : gameId
     };
-    //console.log("All Players Present. Preparing game...");
-    io.sockets.in(data.gameId).emit('beginNewGame', data);
+
+    const url = 'https://fibbage-tribute-questions.herokuapp.com/question/random/' + Config.nbRounds + '?lan=' + Config.language;
+    request.get(url, (error, response, body) => {
+        if(error) {
+            return console.dir(error);
+        }
+        questions = JSON.parse(body);
+        console.log("Questions :", questions);
+
+        //console.log("All Players Present. Preparing game...");
+        io.sockets.in(data.gameId).emit('beginNewGame', data);
+    });
 }
 
 /*
@@ -76,7 +89,7 @@ function hostStartGame(gameId) {
  * @param data Sent from the client. Contains the current round and gameId (room)
  */
 function hostNextRound(data) {
-    if(data.round < wordPool[Config.language].length ){
+    if(data.round < questions.length ){
         // Send a new set of words back to the host and players.
         sendQuestion(data.round, data.gameId);
     } else {
@@ -193,42 +206,23 @@ function playerRestart(data) {
  * @param gameId The room identifier
  */
 function sendQuestion(wordPoolIndex, gameId) {
-    var data = getWordData(wordPoolIndex);
-    io.sockets.in(gameId).emit('newQuestion', data);
-}
-
-/**
- * This function does all the work of getting a new words from the pile
- * and organizing the data to be sent back to the clients.
- *
- * @param i The index of the wordPool.
- * @returns {{round: *, word: *, answer: *, list: Array}}
- */
-function getWordData(i){
     /*
-    // Randomize the order of the available words.
-    // The first element in the randomized array will be displayed on the host screen.
-    // The second element will be hidden in a list of decoys as the correct answer
-    // var words = shuffle(wordPool[i].words);
+    const url = 'https://fibbage-tribute-questions.herokuapp.com/question/random?lan=' + Config.language;
+    request.get(url, (error, response, body) => {
+        if(error) {
+            return console.dir(error);
+        }
+        let json = JSON.parse(body);
+        json.answer = json.solution;
+        json.round = wordPoolIndex;
 
-    // Randomize the order of the decoy words and choose the first 5
-    var decoys = wordPool[i].decoys.slice();
-    decoys = shuffle(decoys);
-
-    // Pick a random spot in the decoy list to put the correct answer
-    var rnd = Math.floor(Math.random() * decoys.length);
-    decoys.splice(rnd, 0, wordPool[i].answer);
+        io.sockets.in(gameId).emit('newQuestion', json);
+    });
     */
-
-    // Package the words into a single object.
-    var wordData = {
-        round: i,
-        question : wordPool[Config.language][i].question,   // Displayed Word
-        answer : wordPool[Config.language][i].answer, // Correct Answer
-        //list : decoys      // Word list for player (decoys and answer)
-    };
-
-    return wordData;
+    var json = questions[wordPoolIndex];
+    json.answer = json.solution;
+    json.round = wordPoolIndex;
+    io.sockets.in(gameId).emit('newQuestion', json);
 }
 
 /*
@@ -255,51 +249,3 @@ function shuffle(array) {
 
     return array;
 }
-
-/**
- * Each element in the array provides data for a single round in the game.
- *
- * In each round, two random "words" are chosen as the host word and the correct answer.
- * Five random "decoys" are chosen to make up the list displayed to the player.
- * The correct answer is randomly inserted into the list of chosen decoys.
- *
- * @type {Array}
- */
-var wordPool = {
-    en: [
-        {
-            "question"  : "William Shatner raised $25.000 for Habitat for Humanity by selling his ...",
-            "answer" : "kidney stone",
-        },
-        {
-            "question"  : "Anatidaephobia is the fear that somewhere in the world a ... is watching you.",
-            "answer" : "duck",
-        },
-        {
-            "question"  : "The island of Man flag depicts three ... interlinked together.",
-            "answer" : "legs",
-        },
-        {
-            "question"  : "Jacobites Cruises purchased unusual insurance to protect it from damage caused by ...",
-            "answer" : "The Loch Ness monster",
-        },
-    ],
-    fr: [
-        {
-            "question"  : "Dans le cadre d'une vente caritative, William Shatner a vendu un(e) ... pour 25 000 $ au profit de l'ONG Habitat for Humanity.",
-            "answer" : "calcul rénal",
-        },
-        {
-            "question"  : "L’anatidaephobie est la peur que quelque part il y ait un(e) ... qui vous observe.",
-            "answer" : "canard",
-        },
-        {
-            "question"  : "Le drapeau de l'île de Man représente trois ... entrecroisé(e)s.",
-            "answer" : "jambes",
-        },
-        {
-            "question"  : "La société de croisières Jacobite cruises LTD a assuré ses bateaux contre les dommages produits par le/la ...",
-            "answer" : "Loch Ness",
-        },
-    ]
-};
