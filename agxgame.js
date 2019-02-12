@@ -45,8 +45,8 @@ function hostCreateNewGame() {
     // Create a unique Socket.IO Room
     var thisGameId = ( Math.random() * 100000 ) | 0;
 
-    // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
-    this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
+    // Return the Room ID (gameId) and the socket ID (sessionId) to the browser client
+    this.emit('newGameCreated', {gameId: thisGameId, sessionId: this.id});
 
     // Join the Room and wait for the players
     this.join(thisGameId.toString());

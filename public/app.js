@@ -8,7 +8,7 @@ jQuery(function($){
     /**
      * All the code relevant to Socket.IO is collected in the IO namespace.
      *
-     * @type {{init: Function, bindEvents: Function, onConnected: Function, onNewGameCreated: Function, playerJoinedRoom: Function, beginNewGame: Function, onNewWordData: Function, hostCheckAnswer: Function, gameOver: Function, error: Function}}
+     * @type {{init: Function, bindEvents: Function, onConnected: Function, onNewGameCreated: Function, onPlayerJoinedRoom: Function, onBeginNewGame: Function, onNewQuestion: Function, onPloysList: Function, onHostCheckAnswer: Function, onHostSavePloy: Function, onGameOver: Function, onError: Function}}
      */
     var IO = {
 
@@ -28,8 +28,8 @@ jQuery(function($){
         bindEvents : function() {
             IO.socket.on('connected', IO.onConnected );
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
-            IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
-            IO.socket.on('beginNewGame', IO.beginNewGame );
+            IO.socket.on('playerJoinedRoom', IO.onPlayerJoinedRoom );
+            IO.socket.on('beginNewGame', IO.onBeginNewGame );
             IO.socket.on('newQuestion', IO.onNewQuestion);
             IO.socket.on('ploysList', IO.onPloysList);
             IO.socket.on('hostCheckAnswer', IO.hostCheckAnswer);
@@ -44,13 +44,14 @@ jQuery(function($){
          */
         onConnected : function() {
             // Cache a copy of the client's socket.IO session ID on the App
-            App.mySocketId = IO.socket.socket.sessionid;
-            // console.log(data.message);
+            App.sessionId = IO.socket.socket.sessionid;
+
+            console.log("Successfully connected. Session ID : " + App.sessionId);
         },
 
         /**
          * A new game has been created and a random game ID has been generated.
-         * @param data {{ gameId: int, mySocketId: * }}
+         * @param data {{ gameId: int, sessionId: * }}
          */
         onNewGameCreated : function(data) {
             App.Host.gameInit(data);
@@ -60,22 +61,22 @@ jQuery(function($){
          * A player has successfully joined the game.
          * @param data {{playerName: string, gameId: int, playerId: int}}
          */
-        playerJoinedRoom : function(data) {
+        onPlayerJoinedRoom : function(data) {
             // When a player joins a room, do the updateWaitingScreen funciton.
             // There are two versions of this function: one for the 'host' and
             // another for the 'player'.
-            //
+
             // So on the 'host' browser window, the App.Host.updateWiatingScreen function is called.
             // And on the player's browser, App.Player.updateWaitingScreen is called.
-            App[App.myRole].updateWaitingScreen(data);
+            App[App.role].updateWaitingScreen(data);
         },
 
         /**
          * Both players have joined the game.
          * @param data
          */
-        beginNewGame : function(data) {
-            App[App.myRole].gameCountdown(data);
+        onBeginNewGame : function(data) {
+            App[App.role].gameCountdown(data);
         },
 
         /**
@@ -87,7 +88,7 @@ jQuery(function($){
             App.currentRound = data.round;
 
             // Change the word for the Host and Player
-            App[App.myRole].newQuestion(data);
+            App[App.role].newQuestion(data);
         },
 
         /**
@@ -96,15 +97,15 @@ jQuery(function($){
          */
         onPloysList : function(data) {
             // XXXXXXXXXXXXX
-            App[App.myRole].ploysList(data);
+            App[App.role].ploysList(data);
         },
 
         /**
          * A player answered. If this is the host, check the answer.
          * @param data
          */
-        hostCheckAnswer : function(data) {
-            if(App.myRole === 'Host') {
+        onHostCheckAnswer : function(data) {
+            if(App.role === 'Host') {
                 App.Host.checkAnswer(data);
             }
         },
@@ -113,8 +114,8 @@ jQuery(function($){
          * A player sent ploy. If this is the host, save the answer.
          * @param data
          */
-        hostSavePloy : function(data) {
-            if(App.myRole === 'Host') {
+        onHostSavePloy : function(data) {
+            if(App.role === 'Host') {
                 App.Host.savePloy(data);
             }
         },
@@ -129,15 +130,15 @@ jQuery(function($){
          * Let everyone know the game has ended.
          * @param data
          */
-        gameOver : function(data) {
-            App[App.myRole].endGame(data);
+        onGameOver : function(data) {
+            App[App.role].endGame(data);
         },
 
         /**
          * An error has occurred.
          * @param data
          */
-        error : function(data) {
+        onError : function(data) {
             alert(data.message);
         }
 
@@ -155,18 +156,17 @@ jQuery(function($){
         /**
          * This is used to differentiate between 'Host' and 'Player' browsers.
          */
-        myRole: '',   // 'Player' or 'Host'
+        role: '',   // 'Player' or 'Host'
 
         /**
          * The Socket.IO socket object identifier. This is unique for
          * each player and host. It is generated when the browser initially
          * connects to the server when the page loads for the first time.
          */
-        mySocketId: '',
+        sessionId: '',
 
         /**
-         * Identifies the current round. Starts at 0 because it corresponds
-         * to the array of word data stored on the server.
+         * Identifies the current round.
          */
         currentRound: 0,
 
@@ -191,14 +191,14 @@ jQuery(function($){
          */
         cacheElements: function () {
             App.$doc = $(document);
+            App.$gameArea = $('#gameArea');
 
             // Templates
-            App.$gameArea = $('#gameArea');
-            App.$templateIntroScreen = $('#intro-screen-template').html();
-            App.$templateNewGame = $('#create-game-template').html();
-            App.$templateJoinGame = $('#join-game-template').html();
-            App.$hostGame = $('#host-game-template').html();
-            App.$playerInfo = $('#player-info-template').html();
+            App.$introScreenTemplate = $('#intro-screen-template').html();
+            App.$newGameTemplate = $('#create-game-template').html();
+            App.$joinGameTemplate = $('#join-game-template').html();
+            App.$hostGameTemplate = $('#host-game-template').html();
+            App.$playerInfoTemplate = $('#player-info-template').html();
             App.$ployTemplate = $('#ploy-template').html();
             App.$waitScreenTemplate = $('#wait-screen-template').html();
             App.$playerAnswerTemplate = $('#player-answer-template').html();
@@ -227,11 +227,11 @@ jQuery(function($){
          * *********************************** */
 
         /**
-         * Show the initial Anagrammatix Title Screen
+         * Show the initial Fibbage Tribute Title Screen
          * (with Start and Join buttons)
          */
         showInitScreen: function() {
-            App.$gameArea.html(App.$templateIntroScreen);
+            App.$gameArea.html(App.$introScreenTemplate);
             App.doTextFit('.title');
         },
 
@@ -278,16 +278,16 @@ jQuery(function($){
 
             /**
              * The Host screen is displayed for the first time.
-             * @param data{{ gameId: int, mySocketId: * }}
+             * @param data{{ gameId: int, sessionId: * }}
              */
             gameInit: function (data) {
                 App.gameId = data.gameId;
-                App.mySocketId = data.mySocketId;
-                App.myRole = 'Host';
+                App.sessionId = data.sessionId;
+                App.role = 'Host';
                 App.Host.numPlayersInRoom = 0;
 
                 App.Host.displayNewGameScreen();
-                // console.log("Game started with ID: " + App.gameId + ' by host: ' + App.mySocketId);
+                // console.log("Game started with ID: " + App.gameId + ' by host: ' + App.sessionId);
             },
 
             /**
@@ -360,7 +360,7 @@ jQuery(function($){
             gameCountdown : function() {
 
                 // Prepare the game screen with new HTML
-                App.$gameArea.html(App.$hostGame);
+                App.$gameArea.html(App.$hostGameTemplate);
                 App.doTextFit('#hostWord');
 
                 // Begin the on-screen countdown timer
@@ -372,7 +372,7 @@ jQuery(function($){
                 Object.keys(App.Host.players).forEach(function(key){
                     const player = App.Host.players[key];
 
-                    const $playerInfo = $(App.$playerInfo).appendTo('#playerInfos');
+                    const $playerInfo = $(App.$playerInfoTemplate).appendTo('#playerInfos');
 
                     $playerInfo
                         .find('.playerName')
@@ -651,7 +651,7 @@ jQuery(function($){
                 // console.log('Clicked "Join A Game"');
 
                 // Display the Join Game HTML on the player's screen.
-                App.$gameArea.html(App.$templateJoinGame);
+                App.$gameArea.html(App.$joinGameTemplate);
             },
 
             /**
@@ -671,7 +671,7 @@ jQuery(function($){
                 IO.socket.emit('playerJoinGame', data);
 
                 // Set the appropriate properties for the current player.
-                App.myRole = 'Player';
+                App.role = 'Player';
                 App.Player.myName = data.playerName;
             },
 
@@ -689,7 +689,7 @@ jQuery(function($){
                 // collect data to send to the server
                 var data = {
                     gameId: App.gameId,
-                    playerId: App.mySocketId,
+                    playerId: App.sessionId,
                     ploy: $('#inputPloy').val(),
                     round: App.currentRound
                 };
@@ -709,7 +709,7 @@ jQuery(function($){
 
                 var data = {
                     gameId: App.gameId,
-                    playerId: App.mySocketId,
+                    playerId: App.sessionId,
                     round: App.currentRound,
                     answer: event.data
                 };
@@ -744,7 +744,7 @@ jQuery(function($){
              */
             updateWaitingScreen : function(data) {
                 if(IO.socket.socket.sessionid === data.playerId){
-                    App.myRole = 'Player';
+                    App.role = 'Player';
                     App.gameId = data.gameId;
 
                     $('#btnPlayerLaunchGame').css('display', 'inline-block');
@@ -761,7 +761,7 @@ jQuery(function($){
              * @param hostData
              */
             gameCountdown : function(hostData) {
-                App.Player.hostSocketId = hostData.mySocketId;
+                App.Player.hostSocketId = hostData.sessionId;
                 $('#gameArea')
                     .html('<div class="gameOver">Get Ready!</div>');
             },
@@ -792,8 +792,7 @@ jQuery(function($){
                         .addClass('btn')
                         .val(this.value)
                         .html(this.value.toUpperCase())
-                    console.log("temp", App.mySocketId, this.playerId, App.mySocketId == this.playerId)
-                    if(App.mySocketId == this.playerId)
+                    if(App.sessionId == this.playerId)
                         $button.attr('disabled', 'disabled');
                     var $li = $('<li/>');
                     $li.append($button);
