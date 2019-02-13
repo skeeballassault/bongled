@@ -300,7 +300,7 @@ jQuery(function($){
 
                 // Display the URL on screen
                 $('#gameURL').text(window.location.href);
-                App.doTextFit('#gameURL');
+                //App.doTextFit('#gameURL');
 
                 // Show the gameId / room id on screen
                 $('#spanNewGameCode').text(App.gameId);
@@ -872,23 +872,15 @@ jQuery(function($){
          * @param el The parent element of some text
          */
         doTextFit : function(el) {
-            textFit(
-                $(el)[0],
-                {
-                    alignHoriz: true,
-                    widthOnly: true,
-                    minFontSize: 50,
-                    maxFontSize: 100,
-                    multiLine: true
-                }
-            );
+            textFit($(el)[0], {
+                minFontSize: 10,
+                maxFontSize: 200,
+                alignVert: true,
+                multiLine: true
+            });
+            console.log(el);
         }
-
     };
-
-    $(window).resize(function () {
-        App.doTextFit('#hostWord');
-    });
 
     fetch('/config.json').then(data => data.json()).then(json => {
         Config = json;

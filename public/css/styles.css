@@ -103,15 +103,20 @@ html, body {
     left: 0;
     top: 0;
     right: 0;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .title {
     margin: 0px auto;
     text-align: center;
-    width: 100%;
     font-family: 'Quicksand', sans-serif;
     color: #ECFFE0;
     font-weight: 300;
+
+    width: 100%;
+    flex-grow: 1;
 }
 
 .buttons {
@@ -268,10 +273,14 @@ li:not(:last-child) .btnAnswer {
     display: flex;
     justify-content: center;
     flex-direction: column;
+    width: 90%;
+    margin: auto;
 }
 
 #hostWord {
-    
+    flex-grow: 1;
+    width: 100%;
+    text-align: center;
 }
 
 #hostWord h2, #btnPlayerRestart h3 {
