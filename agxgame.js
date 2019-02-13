@@ -26,6 +26,7 @@ exports.initGame = function(sio, socket){
 
     // Player Events
     gameSocket.on('playerJoinGame', playerJoinGame);
+    gameSocket.on('playerLaunchGameClick', playerLaunchGameClick);
     gameSocket.on('playerAnswer', playerAnswer);
     gameSocket.on('playerSendPloy', playerSendPloy);
     gameSocket.on('playerRestart', playerRestart);
@@ -55,14 +56,13 @@ function hostCreateNewGame() {
  * Two players have joined. Alert the host!
  * @param gameId The game ID / room ID
  */
-function hostPrepareGame(gameId) {
+function hostPrepareGame(data) {
     var sock = this;
-    var data = {
-        mySocketId : sock.id,
-        gameId : gameId
-    };
 
-    const url = 'https://fibbage-tribute-questions.herokuapp.com/question/random/' + Config.nbRounds + '?lan=' + Config.language;
+    data.mySocketId = sock.id;
+
+    const url = 'https://fibbage-tribute-questions.herokuapp.com/question/random/' + Config.nbRounds + '?lan=' + data.language;
+    console.log(url);
     request.get(url, (error, response, body) => {
         if(error) {
             return console.dir(error);
@@ -155,6 +155,10 @@ function playerJoinGame(data) {
         // Otherwise, send an error message back to the player.
         this.emit('error',{message: "This room does not exist."} );
     }
+}
+
+function playerLaunchGameClick(gameId){
+    io.sockets.in(gameId).emit('hostLaunchGame', gameId);
 }
 
 /**

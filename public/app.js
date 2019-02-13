@@ -34,6 +34,7 @@ jQuery(function($){
             IO.socket.on('ploysList', IO.onPloysList);
             IO.socket.on('hostCheckAnswer', IO.hostCheckAnswer);
             IO.socket.on('hostSavePloy', IO.hostSavePloy);
+            IO.socket.on('hostLaunchGame', IO.hostLaunchGame);
             IO.socket.on('gameOver', IO.gameOver);
             IO.socket.on('error', IO.error );
         },
@@ -115,6 +116,12 @@ jQuery(function($){
         hostSavePloy : function(data) {
             if(App.myRole === 'Host') {
                 App.Host.savePloy(data);
+            }
+        },
+
+        hostLaunchGame : function(data) {
+            if(App.myRole === 'Host') {
+                App.Host.launchGame(data);
             }
         },
 
@@ -288,7 +295,8 @@ jQuery(function($){
              */
             displayNewGameScreen : function() {
                 // Fill the game screen with the appropriate HTML
-                App.$gameArea.html(App.$templateNewGame);
+                App.Host.showTemplateNewGame();
+                // App.$gameArea.html(App.$templateNewGame);
 
                 // Display the URL on screen
                 $('#gameURL').text(window.location.href);
@@ -296,6 +304,29 @@ jQuery(function($){
 
                 // Show the gameId / room id on screen
                 $('#spanNewGameCode').text(App.gameId);
+            },
+
+            showTemplateNewGame : function() {
+                App.$gameArea.html(App.$templateNewGame);
+
+                var $flags = $('#flags');
+                Object.keys(Config.languages).forEach(code => {
+                    var $flag = $('<img src="images/flags/' + Config.languages[code].flag_path + '">');
+                    $flag.addClass('flag');
+                    $flag.click(function(){
+                        App.Host.selectFlag(this, code);
+                    });
+                    $flags.append($flag);
+                });
+
+                $('.flag')[0].click();
+            },
+
+            selectFlag : function($flag, code) {
+                App.language = code;
+                console.log(code);
+                $('.flag').removeClass('selectedFlag');
+                $($flag).addClass('selectedFlag');
             },
 
             /**
@@ -317,6 +348,10 @@ jQuery(function($){
 
                 // Increment the number of players in the room
                 App.Host.numPlayersInRoom += 1;
+            },
+
+            launchGame : function(data) {
+                IO.socket.emit('hostRoomFull', {gameId: App.gameId, language: App.language});
             },
 
             /**
@@ -587,7 +622,7 @@ jQuery(function($){
              * A player hit the 'Start Again' button after the end of a game.
              */
             restartGame : function() {
-                App.$gameArea.html(App.$templateNewGame);
+                App.Host.showTemplateNewGame();
                 $('#spanNewGameCode').text(App.gameId);
             }
         },
@@ -641,7 +676,7 @@ jQuery(function($){
             },
 
             onPlayerLaunchGameClick: function() {
-                IO.socket.emit('hostRoomFull', App.gameId);
+                IO.socket.emit('playerLaunchGameClick', App.gameId);
             },
 
             /**

@@ -5,6 +5,15 @@
     "goodAnswer": 10,
     "ployAnswer": 5,
     "badAnswer": -3,
-    "language": "en",
+    "languages": {
+        "en": {
+            "name": "English",
+            "flag_path": "united-kingdom.png"
+        },
+        "fr": {
+            "name": "Français",
+            "flag_path": "france.png"
+        }
+    },
     "nbRounds": 10
 }
