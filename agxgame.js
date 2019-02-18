@@ -4,6 +4,8 @@ var gameSocket;
 const request = require("request");
 var Config = require('./public/config.json');
 
+const NODE_ENV = process.env.NODE_ENV || 'dev';
+
 var questions = [];
 
 /**
@@ -61,7 +63,8 @@ function hostPrepareGame(data) {
 
     data.mySocketId = sock.id;
 
-    const url = 'https://fibbage-tribute-questions.herokuapp.com/question/random/' + Config.nbRounds + '?lan=' + data.language;
+    const domain = NODE_ENV == 'prod' ? 'https://fibbage-tribute-questions.herokuapp.com' : 'http://localhost:3000'
+    const url = domain + '/question/random/' + Config.nbRounds + '?lan=' + data.language;
     console.log(url);
     request.get(url, (error, response, body) => {
         if(error) {
