@@ -1,15 +1,13 @@
-# Fibbage Tribute
+# Bongled!
 
-A multi-player, multi-screen game built to experiment with Socket.IO and Node.js. It reuse the concept of Fibbage, a party-game included in the game JackBox Party Pack 2.
-
-The game is available at https://fibbage-tribute.herokuapp.com/
+A multi-player, multi-screen game built to experiment with Socket.IO and Node.js. Players take turns captioning wild stock photos.
 
 ## To Install
 
 1. Ensure Node.js is installed
 2. Clone this repository - `git clone https://github.com/Minious/fibbage-tribute.git`
 3. Install the dependences:
-    1. `cd fibbage-tribute`
+    1. `cd bongled`
     2. `npm install`
 4. Start the server: `node index.js`
 5. Visit http://127.0.0.1:8080 in a browser and click CREATE.
@@ -18,7 +16,7 @@ The game is available at https://fibbage-tribute.herokuapp.com/
 
 ### Setup
 1. Ensure at least 3 devices are on a local network, or that the application server is accessable by at least 3 devices.
-2. Start the Anagrammatix application
+2. Start the application
 3. Visit http://your.ip.address:8080 on a PC, Tablet, SmartTV or other large screen device
 4. Click CREATE
 5. On a mobile device, visit http://your.ip.address:8080
