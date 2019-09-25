@@ -25,9 +25,9 @@ A multi-player, multi-screen game built to experiment with Socket.IO and Node.js
 8. Find an opponent and have him/her repeat steps 5-7 on another mobile device.
 
 ### Gameplay
-1. On the large screen (the game Host), a sentence with a missing word will appear.
+1. On the large screen (the game Host), a silly stock photo will appear.
 2. On each players' devices, a text field appears.
-3. The players must provide a ploy which has to be credible.
-4. One each players send their ploys, the game host and the players' devices display the ploys and the real answer to the sentence.
-5. The player who taps the correct answer gets 10 points and if a player choose a ploy, the player who provided it gets 5 points.
+3. The players must provide a funny caption for the image.
+4. ~~One each players send their ploys, the game host and the players' devices display the ploys and the real answer to the sentence.~~ Working on re-org of voting
+5. ~~The player who taps the correct answer gets 10 points and if a player choose a ploy, the player who provided it gets 5 points.~~ Working on re-org of scoring
 6. The player with the most points at the end of the game wins!
